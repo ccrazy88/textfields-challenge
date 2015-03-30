@@ -16,7 +16,9 @@ class CashTextFieldDelegate: NSObject, UITextFieldDelegate {
             return false
         }
 
+        let newText = (textField.text as NSString).stringByReplacingCharactersInRange(range, withString: string)
         let digits = NSCharacterSet.decimalDigitCharacterSet()
+        var newTextDigits = ""
 
         // Digits only in input (or deletions)
         for character in string.unicodeScalars {
@@ -25,9 +27,12 @@ class CashTextFieldDelegate: NSObject, UITextFieldDelegate {
             }
         }
 
+        // Max length of 15 ($999,999,999.99)
+        if count(newText) > 15 {
+            return false
+        }
+
         // Gather all digits
-        let newText = (textField.text as NSString).stringByReplacingCharactersInRange(range, withString: string)
-        var newTextDigits = ""
         for character in newText.unicodeScalars {
             if digits.longCharacterIsMember(character.value) {
                 newTextDigits.append(character)
