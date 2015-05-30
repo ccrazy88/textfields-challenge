@@ -28,6 +28,10 @@ class ViewController: UIViewController, UITextFieldDelegate {
         self.textField1.delegate = zipDelegate
         self.textField2.delegate = cashDelegate
         self.textField3.delegate = self
+
+        let formatter = NSNumberFormatter()
+        formatter.numberStyle = .CurrencyStyle
+        self.textField2.placeholder = formatter.stringFromNumber(NSNumber(integer: 0))
     }
 
     // MARK: -

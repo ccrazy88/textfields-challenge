@@ -8,7 +8,21 @@ import UIKit
 class CashTextFieldDelegate: NSObject, UITextFieldDelegate {
 
     // MARK: -
+    // MARK: Properties
+
+    private lazy var formatter: NSNumberFormatter = {
+        let formatter = NSNumberFormatter()
+        formatter.numberStyle = .CurrencyStyle
+        return formatter
+    }()
+
+    // MARK: -
     // MARK: UITextFieldDelegate Methods
+
+    // DISCLAIMERS:
+    // - Setting the textField's text property moves the cursor to the end of the string
+    // - Only works on currencies that have a unit (i.e. dollars) with 100 subunits (i.e. cents)
+    // - Limits final string to a maximum of 15 characters
 
     func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
         // Prevent undo crash
@@ -37,13 +51,10 @@ class CashTextFieldDelegate: NSObject, UITextFieldDelegate {
         // Format all digits into a currency string
         let cents = NSDecimalNumber(string: newTextDigits)
         if cents == NSDecimalNumber.notANumber() {
-            textField.text = "$0.00"
+            textField.text = formatter.stringFromNumber(NSNumber(integer: 0))
         } else {
             let dollars = cents.decimalNumberByDividingBy(100)
-            let formatter = NSNumberFormatter()
-            formatter.numberStyle = .CurrencyStyle
             let proposedText = formatter.stringFromNumber(dollars)
-            // Max length of 15 ($999,999,999.99)
             if let proposedText = proposedText {
                 if count(proposedText) > 15 {
                     return false
@@ -57,7 +68,7 @@ class CashTextFieldDelegate: NSObject, UITextFieldDelegate {
 
     func textFieldDidBeginEditing(textField: UITextField) {
         if textField.text.isEmpty {
-            textField.text = "$0.00"
+            textField.text = formatter.stringFromNumber(NSNumber(integer: 0))
         }
     }
 
